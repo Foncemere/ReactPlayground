@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { HelloWorldComponent } from "@/src/HelloWorldComponent";
+import { HelloWorldComponent } from "@/src/1_HelloWorldComponent";
 import { TicTacToeGameComponent } from "@/src/TicTacToeGameComponent";
 
 export default function Home() {

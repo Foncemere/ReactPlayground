@@ -1,4 +1,4 @@
-import { StateManagementComponent } from "@/src/StateManagementComponent";
+import { StateManagementComponent } from "@/src/2_StateManagementComponent";
 
 export const HelloWorldComponent = (props) => {
   return (
