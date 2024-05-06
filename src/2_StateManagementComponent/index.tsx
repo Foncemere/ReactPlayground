@@ -6,7 +6,10 @@ export const StateManagementComponent = (props) => {
   const [myState, setMyState] = useState(false);
 
   return (
-    <button onClick={() => setMyState(!myState)}>
+    <button
+      style={{ backgroundColor: "#f6a1a1" }}
+      onClick={() => setMyState(!myState)}
+    >
       <p>Hello i work :)</p>
       <p>{JSON.stringify(myState)}</p>
     </button>
