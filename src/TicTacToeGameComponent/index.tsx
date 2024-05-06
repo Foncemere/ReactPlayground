@@ -4,6 +4,8 @@ import { useState } from "react";
 export const TicTacToeGameComponent = (props) => {
   const [currPlayer, setCurrPlayer] = useState(0);
   const [board, setBoard] = useState({});
+  //object to know who claims the square they are on, when this is updated
+  // we will call a useEffect to see if there's a winner.
   return (
     <div>
       <div style={{ flexDirection: "row", display: "flex" }}>
