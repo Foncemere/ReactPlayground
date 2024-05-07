@@ -54,8 +54,11 @@ export const TicTacToeGameComponent = (props) => {
     }
   }, [board]);
   const claimSquare = (id) => {
-    setBoard({ ...board, [id]: currPlayer ? secondPlayer : firstPlayer });
-    setCurrPlayer(!currPlayer);
+    setBoard((prevBoard) => ({
+      ...prevBoard,
+      [id]: currPlayer ? secondPlayer : firstPlayer,
+    }));
+    setCurrPlayer((prevState) => !prevState);
   };
   return (
     <div>
