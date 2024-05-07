@@ -34,8 +34,8 @@ export const TicTacToeGameComponent = (props) => {
   };
 
   useEffect(() => {
+    //there can be a winner after 5 rounds (starter will have at least 3 squares)
     if (Object.keys(board).length > 4) {
-      //check if there is a winner
       checkWinner();
     }
   }, [board]);
