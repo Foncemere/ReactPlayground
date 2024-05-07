@@ -15,6 +15,9 @@ const winningCombos = [
   [2, 4, 6],
 ];
 
+const firstPlayer = "X";
+const secondPlayer = "O";
+
 export const TicTacToeGameComponent = (props) => {
   const [currPlayer, setCurrPlayer] = useState(false);
   const [board, setBoard] = useState({});
@@ -33,6 +36,12 @@ export const TicTacToeGameComponent = (props) => {
     }
   };
 
+  const restart = () => {
+    setBoard({});
+    setWinner(null);
+    setCurrPlayer(false);
+  };
+
   useEffect(() => {
     //there can be a winner after 5 rounds (starter will have at least 3 squares)
     if (Object.keys(board).length > 4) {
@@ -40,26 +49,35 @@ export const TicTacToeGameComponent = (props) => {
     }
   }, [board]);
   const claimSquare = (id) => {
-    setBoard({ ...board, [id]: currPlayer ? "o" : "x" });
+    setBoard({ ...board, [id]: currPlayer ? secondPlayer : firstPlayer });
     setCurrPlayer(!currPlayer);
   };
   return (
     <div>
-      <p>{winner ? `Winner is ${winner}` : `No Winner yet`}</p>
-      <div style={{ flexDirection: "row", display: "flex" }}>
-        <Square id={0} currentPlayer={board[0]} onClick={claimSquare} />
-        <Square id={1} currentPlayer={board[1]} onClick={claimSquare} />
-        <Square id={2} currentPlayer={board[2]} onClick={claimSquare} />
-      </div>
-      <div style={{ flexDirection: "row", display: "flex" }}>
-        <Square id={3} currentPlayer={board[3]} onClick={claimSquare} />
-        <Square id={4} currentPlayer={board[4]} onClick={claimSquare} />
-        <Square id={5} currentPlayer={board[5]} onClick={claimSquare} />
-      </div>
-      <div style={{ flexDirection: "row", display: "flex" }}>
-        <Square id={6} currentPlayer={board[6]} onClick={claimSquare} />
-        <Square id={7} currentPlayer={board[7]} onClick={claimSquare} />
-        <Square id={8} currentPlayer={board[8]} onClick={claimSquare} />
+      <p>
+        {winner
+          ? `Winner is ${winner}`
+          : Object.keys(board).length === 9
+            ? `No Winner`
+            : `It's ${currPlayer ? secondPlayer : firstPlayer}'s turn`}
+      </p>
+      <button onClick={restart}>Restart</button>
+      <div style={{ pointerEvents: winner ? "none" : "auto" }}>
+        <div style={{ flexDirection: "row", display: "flex" }}>
+          <Square id={0} currentPlayer={board[0]} onClick={claimSquare} />
+          <Square id={1} currentPlayer={board[1]} onClick={claimSquare} />
+          <Square id={2} currentPlayer={board[2]} onClick={claimSquare} />
+        </div>
+        <div style={{ flexDirection: "row", display: "flex" }}>
+          <Square id={3} currentPlayer={board[3]} onClick={claimSquare} />
+          <Square id={4} currentPlayer={board[4]} onClick={claimSquare} />
+          <Square id={5} currentPlayer={board[5]} onClick={claimSquare} />
+        </div>
+        <div style={{ flexDirection: "row", display: "flex" }}>
+          <Square id={6} currentPlayer={board[6]} onClick={claimSquare} />
+          <Square id={7} currentPlayer={board[7]} onClick={claimSquare} />
+          <Square id={8} currentPlayer={board[8]} onClick={claimSquare} />
+        </div>
       </div>
     </div>
   );
@@ -78,6 +96,7 @@ const Square = (props) => {
       id={props.id}
       onClick={() => props.onClick(props.id)}
       className={"p-5 border-2 border-black"}
+      disabled={props.currentPlayer}
     >
       <p>{props.currentPlayer}</p>
     </button>
