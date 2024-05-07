@@ -20,32 +20,52 @@ const firstPlayer = "X";
 const secondPlayer = "O";
 
 export const TicTacToeGameComponent = (props) => {
-  const [currPlayer, setCurrPlayer] = useState(false);
+  const [isCurrentYou, setIsCurrentYou] = useState(false);
   const [board, setBoard] = useState({});
   const [winner, setWinner] = useState(null);
   const [xWins, setXWins] = useState(0);
   const [oWins, setOWins] = useState(0);
+  const searchParams = new URLSearchParams(window.location.search);
+  console.log("weee", searchParams);
+  //http://localhost:3000/?user=x
+  //http://localhost:3000/?user={char}
+  const user = searchParams.get("user");
 
   const checkWinner = () => {
     const foundWinner = winningCombos.find((combo) => {
       const [a, b, c] = combo;
+      //it's possible board[a] is null, so it's considered as a valid combo
+      //So we must remove it
+      if (board[a] == null) {
+        return;
+      }
       console.log("found", a, b, c);
       return board[a] === board[b] && board[b] === board[c];
     });
     if (foundWinner) {
       setWinner(board[foundWinner[0]]);
-      if (board[foundWinner[0]] === firstPlayer) {
-        setXWins(xWins + 1);
+      if (
+        (board[foundWinner[0]] || "").toLowerCase() ===
+        firstPlayer.toLowerCase()
+      ) {
+        setXWins((prevState) => prevState + 1);
       } else {
-        setOWins(oWins + 1);
+        setOWins((prevState) => prevState + 1);
       }
     }
   };
 
-  const restart = () => {
+  const claimSquareCore = (id, player) => {
+    setBoard((prevBoard) => ({
+      ...prevBoard,
+      [id]: player,
+    }));
+  };
+
+  const restartCore = () => {
     setBoard({});
     setWinner(null);
-    setCurrPlayer(false);
+    setIsCurrentYou(user === "x");
   };
 
   useEffect(() => {
@@ -54,13 +74,37 @@ export const TicTacToeGameComponent = (props) => {
     }
     function onConnect() {
       console.log("this is connected");
+      //we want to listen to these socket events
+      socket.on("hello", (args) => console.log(args));
+
+      socket.on("cellSelection", (args) => {
+        const { id, user: player } = args;
+
+        claimSquareCore(id, player);
+
+        if (player !== user) {
+          setIsCurrentYou(true);
+        } else {
+          setIsCurrentYou(false);
+        }
+      });
+
+      socket.on("reset", () => {
+        restartCore();
+      });
     }
+
+    if (user?.toLowerCase() === firstPlayer.toLowerCase()) {
+      setIsCurrentYou(true);
+    }
+
     function onDisconnect() {
       console.log("this is disconnected");
     }
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     return () => {
+      //we want to remove the reference once the user is off
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
     };
@@ -68,16 +112,16 @@ export const TicTacToeGameComponent = (props) => {
 
   useEffect(() => {
     //there can be a winner after 5 rounds (starter will have at least 3 squares)
-    if (Object.keys(board).length > 4) {
+    if (!winner && Object.keys(board).length > 4) {
       checkWinner();
     }
-  }, [board]);
+  }, [winner, board]);
   const claimSquare = (id) => {
-    setBoard((prevBoard) => ({
-      ...prevBoard,
-      [id]: currPlayer ? secondPlayer : firstPlayer,
-    }));
-    setCurrPlayer((prevState) => !prevState);
+    if (!isCurrentYou) {
+      return;
+    }
+    claimSquareCore(id, user);
+    socket.emit("cellSelection", { id, user });
   };
   return (
     <div>
@@ -86,7 +130,7 @@ export const TicTacToeGameComponent = (props) => {
           ? `Winner is ${winner}`
           : Object.keys(board).length === 9
             ? `No Winner`
-            : `It's ${currPlayer ? secondPlayer : firstPlayer}'s turn`}
+            : `It's ${isCurrentYou ? user : "other player"}'s turn`}
       </p>
       <div style={{ pointerEvents: winner ? "none" : "auto" }}>
         <div style={{ flexDirection: "row", display: "flex" }}>
@@ -105,7 +149,7 @@ export const TicTacToeGameComponent = (props) => {
           <Square id={8} currentPlayer={board[8]} onClick={claimSquare} />
         </div>
       </div>
-      <button onClick={restart}>Restart</button>
+      <button onClick={() => socket.emit("reset")}>Restart</button>
       <div>
         <p>{`X won ${xWins} ${xWins === 1 ? "time" : "times"}`}</p>
         <p>{`O won ${oWins} ${oWins === 1 ? "time" : "times"}`}</p>
