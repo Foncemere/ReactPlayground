@@ -22,6 +22,8 @@ export const TicTacToeGameComponent = (props) => {
   const [currPlayer, setCurrPlayer] = useState(false);
   const [board, setBoard] = useState({});
   const [winner, setWinner] = useState(null);
+  const [xWins, setXWins] = useState(0);
+  const [oWins, setOWins] = useState(0);
 
   const checkWinner = () => {
     const foundWinner = winningCombos.find((combo) => {
@@ -33,6 +35,11 @@ export const TicTacToeGameComponent = (props) => {
     });
     if (foundWinner) {
       setWinner(board[foundWinner[0]]);
+      if (board[foundWinner[0]] === firstPlayer) {
+        setXWins(xWins + 1);
+      } else {
+        setOWins(oWins + 1);
+      }
     }
   };
 
@@ -61,7 +68,6 @@ export const TicTacToeGameComponent = (props) => {
             ? `No Winner`
             : `It's ${currPlayer ? secondPlayer : firstPlayer}'s turn`}
       </p>
-      <button onClick={restart}>Restart</button>
       <div style={{ pointerEvents: winner ? "none" : "auto" }}>
         <div style={{ flexDirection: "row", display: "flex" }}>
           <Square id={0} currentPlayer={board[0]} onClick={claimSquare} />
@@ -78,6 +84,11 @@ export const TicTacToeGameComponent = (props) => {
           <Square id={7} currentPlayer={board[7]} onClick={claimSquare} />
           <Square id={8} currentPlayer={board[8]} onClick={claimSquare} />
         </div>
+      </div>
+      <button onClick={restart}>Restart</button>
+      <div>
+        <p>{`X won ${xWins} ${xWins === 1 ? "time" : "times"}`}</p>
+        <p>{`O won ${oWins} ${oWins === 1 ? "time" : "times"}`}</p>
       </div>
     </div>
   );
