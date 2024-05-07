@@ -29,9 +29,7 @@ export const TicTacToeGameComponent = (props) => {
     const foundWinner = winningCombos.find((combo) => {
       const [a, b, c] = combo;
       console.log("found", a, b, c);
-      return (
-        board[a] === board[b] && board[b] === board[c] && board[a] === board[c]
-      );
+      return board[a] === board[b] && board[b] === board[c];
     });
     if (foundWinner) {
       setWinner(board[foundWinner[0]]);
