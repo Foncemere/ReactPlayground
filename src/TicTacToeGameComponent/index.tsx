@@ -17,7 +17,6 @@ const winningCombos = [
 ];
 
 const firstPlayer = "X";
-const secondPlayer = "O";
 
 export const TicTacToeGameComponent = (props) => {
   const [isCurrentYou, setIsCurrentYou] = useState(false);
@@ -66,7 +65,7 @@ export const TicTacToeGameComponent = (props) => {
   const restartCore = () => {
     setBoard({});
     setWinner(null);
-    setIsCurrentYou(user === "x");
+    // setIsCurrentYou(user === "x");
   };
 
   useEffect(() => {
