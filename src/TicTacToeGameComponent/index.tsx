@@ -160,9 +160,9 @@ export const TicTacToeGameComponent = (props) => {
       </div>
       <button onClick={() => socket.emit("reset")}>Restart</button>
       <div>
-        <p>{`X won ${xWins} ${xWins === 1 ? "time" : "times"}`}</p>
+        <p>{`${Object.values(connectedUsers)[0]} won ${xWins} ${xWins === 1 ? "time" : "times"}`}</p>
+        <p>{`${Object.values(connectedUsers)[1]} won ${oWins} ${oWins === 1 ? "time" : "times"}`}</p>
         <p>connectedUsers: {JSON.stringify(connectedUsers)}</p>
-        <p>{`O won ${oWins} ${oWins === 1 ? "time" : "times"}`}</p>
       </div>
     </div>
   );

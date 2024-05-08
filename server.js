@@ -28,7 +28,11 @@ app
 
       // Add the new user to the list of connected users
       socket.on("userJoins", (user) => {
-        connectedUsers.set(socket.id, user);
+        if (connectedUsers.size >= 2) {
+          connectedUsers.set(socket.id, "spectator");
+        } else {
+          connectedUsers.set(socket.id, user);
+        }
         emitConnectedUsers();
       });
 
