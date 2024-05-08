@@ -25,6 +25,7 @@ export const TicTacToeGameComponent = (props) => {
   const [winner, setWinner] = useState(null);
   const [xWins, setXWins] = useState(0);
   const [oWins, setOWins] = useState(0);
+  const [connectedUsers, setConnectedUsers] = useState([]);
   const searchParams = new URLSearchParams(window.location.search);
   console.log("weee", searchParams);
   //http://localhost:3000/?user=x
@@ -74,7 +75,14 @@ export const TicTacToeGameComponent = (props) => {
     }
     function onConnect() {
       console.log("this is connected");
+      socket.emit("userJoins", user);
       //we want to listen to these socket events
+
+      socket.on("connectedUsers", (connectedUsers) => {
+        console.log("weh", connectedUsers);
+        setConnectedUsers(connectedUsers);
+      });
+
       socket.on("hello", (args) => console.log(args));
 
       socket.on("cellSelection", (args) => {
@@ -123,6 +131,7 @@ export const TicTacToeGameComponent = (props) => {
     claimSquareCore(id, user);
     socket.emit("cellSelection", { id, user });
   };
+
   return (
     <div>
       <p>
@@ -152,6 +161,7 @@ export const TicTacToeGameComponent = (props) => {
       <button onClick={() => socket.emit("reset")}>Restart</button>
       <div>
         <p>{`X won ${xWins} ${xWins === 1 ? "time" : "times"}`}</p>
+        <p>connectedUsers: {JSON.stringify(connectedUsers)}</p>
         <p>{`O won ${oWins} ${oWins === 1 ? "time" : "times"}`}</p>
       </div>
     </div>

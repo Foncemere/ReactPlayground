@@ -10,6 +10,8 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+let connectedUsers = new Map();
+
 app
   .prepare()
   .then(() => {
@@ -19,6 +21,16 @@ app
 
     io.on("connection", (socket) => {
       console.log("A user connected");
+
+      const emitConnectedUsers = () => {
+        io.emit("connectedUsers", Object.fromEntries(connectedUsers));
+      };
+
+      // Add the new user to the list of connected users
+      socket.on("userJoins", (user) => {
+        connectedUsers.set(socket.id, user);
+        emitConnectedUsers();
+      });
 
       //io is to reflect for all connections
       //socket is just for the user itself
@@ -32,8 +44,15 @@ app
         console.log("Received hello from client:", args);
       });
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", (user) => {
         console.log("A user disconnected");
+        // Remove the disconnected user from the list of connected users
+        const index = connectedUsers.get(socket.id);
+        if (index != undefined) {
+          console.log("THIS SOCKET WAS DELETED");
+          connectedUsers.delete(socket.id);
+          emitConnectedUsers();
+        }
       });
     });
 
