@@ -2,12 +2,12 @@ import Link from "next/link";
 import React from "react";
 export const Dashboard = (props) => {
   return (
-    <div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <p>Dashboard</p>
       <Link style={{ backgroundColor: "#e9faa8", display: "flex" }} href={"/"}>
-        Dashboard
+        Go home
       </Link>
-    </div>
+    </main>
   );
 };
 
